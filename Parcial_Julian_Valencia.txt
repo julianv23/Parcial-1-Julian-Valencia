@@ -1,0 +1,67 @@
+plsql.execute <<-SQL
+ CREATE TABLESPACE mid_term datafile
+'JulianValencia.dbf' size 20M
+SQL
+
+plsql.execute <<-SQL
+ CREATE PROFILE exam LIMIT 
+	PASSWORD_LIFE_TIME 5
+  SESSIONS_PER_USER  2 
+  IDLE_TIME 5
+	FAILED_LOGIN_ATTEMPTS 2
+SQL
+
+plsql.execute <<-SQL
+ CREATE USER ejercicios 
+IDENTIFIED BY ejercicios
+DEFAULT TABLESPACE mid_term
+QUOTA UNLIMITED ON mid_term
+GRANT DBA,CONNECT TO ejercicios
+SQL
+
+plsql(:data).execute <<-SQL
+CREATE OR REPLACE VIEW view_1 AS
+    SELECT
+      A.NAME AS CUSTOMER_NAME
+      ,B.NAME AS SALESMAN_NAME
+      ,A.COUNTRY
+    FROM CUSTOMERS A INNER JOIN SALESMAN B
+    ON
+      A.SALESMAN_ID = B.ID AND A.COUNTRY = B.COUNTRY
+SQL
+
+plsql(:data).execute <<-SQL
+CREATE VIEW view_2 AS 
+    SELECT
+      A.NAME AS NAME_CUSTOMER
+      ,B.NAME AS NAME_SALESMAN
+      ,B.COMMISSION
+    FROM CUSTOMERS A INNER JOIN SALESMAN B
+    ON
+      A.SALESMAN_ID = B.ID 
+    WHERE
+      B.COMMISSION >= 0.12
+SQL
+
+plsql(:data).execute <<-SQL
+ -- CREACION VISTA 3 SIN PUNTO Y COMA
+ CREATE VIEW view_3 AS 
+    SELECT
+      B.NAME CUSTOMER_NAME
+      ,B.COUNTRY 
+      ,A.ID ORDER_NUMBER
+      ,A.ORDER_DATE
+      ,A.AMOUNT ORDER_AMOUNT
+      ,COUNT(DISTINCT A.ID) ORDER_TOTAL
+    FROM CUSTOMERS B LEFT JOIN ORDERS A
+    ON
+      A.CUSTOMER_ID = B.ID 
+    GROUP BY
+       B.NAME 
+      ,B.COUNTRY 
+      ,A.ID 
+      ,A.ORDER_DATE
+      ,A.AMOUNT 
+    ORDER BY
+      A.ORDER_DATE ASC
+SQL
